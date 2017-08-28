@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+This script takes the input NewsScape file and extracts the relevant text from it.
+'''
 from datetime import datetime
 import argparse
 
@@ -14,9 +17,6 @@ with open(args.input_file) as f:
 content = [x.strip() for x in content]
 
 date_format = "%Y%m%d%H%M%S.%f"
-#start = datetime.strptime(content[0].split('|')[1]+'.0', date_format)
-#print text_id, collection, file_name, date, year, month, day, time, duration, country,\
-#		channel, title, vid_res, vid_res_orig, language, rec_loc, lb_data[0], lb_data[1], lb_data[2]
 fields = set(["TOP", "COL", "UID", "PID", "ACQ", "DUR", "VID", "TTL", "URL", "TTS", "SRC", "CMT", "LAN", "TTP", "HED", "OBT", "LBT", "END", "CC1"])
 text = ''
 for line in content:
