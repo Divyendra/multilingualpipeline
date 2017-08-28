@@ -9,7 +9,8 @@ The aim of this pipeline is to take as input one of the files in the NewsScape d
 
 ## How to Run:
 
-This pipeline was written to run on a singularity container and hence may not run without all the dependencies. You can download the `syntaxnet_v1.def` file and create a container as described [here](http://www.redhenlab.org/home/tutorials-and-educational-resources/multilingual-corpus-pipeline). After building the container, shell into it and then `cd /opt/models/syntaxnet`. Now, you can run the pipeline as `sh /opt/multilingualpipeline/run.sh <input-file-name> <language-code>`
+This pipeline was written to run on a singularity container and hence may not run standalone without all the dependencies. You can download the `syntaxnet_v1.def` file and create a container as described [here](http://www.redhenlab.org/home/tutorials-and-educational-resources/multilingual-corpus-pipeline). After building the container, shell into it and then `cd /opt/models/syntaxnet`. Now, you can run the pipeline as `sh /opt/multilingualpipeline/run.sh <input-file-name> <language-code>`.  
+If you want to run this outside a container, follow the steps starting from line 17 in `syntaxnet_v1.def`. Note that you may need to use `sudo` with some of them. You should now be able to run the pipeline as described above.
 
 
 ## Documentation
