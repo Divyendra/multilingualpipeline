@@ -37,22 +37,26 @@ elif [ "$2" = "da" ]; then
         alias lemmatize='$LEMMATIZER/./cstlemma -L -f $LEMMATIZER/Rules/Danish/flexrules -d $LEMMATIZER/Rules/Danish/dict -i'
 fi
 
-#cat $1 | tokenize | parse
+#file_name=$(IFS='/' tokens=( "$1" ) && echo ${tokens[-1]})
 
-#cd $SCRIPTS
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+
 python $SCRIPTS/preprocess.py -inf $1 -t 0 |
 ruby $SCRIPTS/ss.rb $2 |
-tokenize > $1"_file_1wot.txt"
+tokenize > /tmp/file_1wot.txt
 
-cat file_1wot.txt | parse > $1"_file_2wot.txt"
+cat /tmp/file_1wot.txt | parse > /tmp/file_2wot.txt
 
 python $SCRIPTS/preprocess.py -inf $1 -t 1 |
 ruby $SCRIPTS/ss.rb $2 |
-tokenize > $1"_file_1wt.txt"
+tokenize > /tmp/file_1wt.txt
 
 if [ "$2" = "sv" ]; then
-        cat /opt/models/syntaxnet/file_1wot.txt | tr " " "\n" | $TREETAGGER/cmd/tree-tagger-swedish > $1"_lemma_output"
+        cat /tmp/file_1wot.txt | tr " " "\n" | $TREETAGGER/cmd/tree-tagger-swedish > /tmp/lemma_output
 else
-        lemmatize /opt/models/syntaxnet/file_1wot.txt > $1"_lemma_output"
+        lemmatize /tmp/file_1wot.txt > /tmp/lemma_output
 fi
-python $SCRIPTS/parser.py -i $1 -l /opt/models/syntaxnet/$1"_lemma_output" -t /opt/models/syntaxnet/$1"_file_1wt.txt" -s /opt/models/syntaxnet/$1"_file_2wot.txt" #4 Files to be read
+python $SCRIPTS/parser.py -i $1 -l /tmp/lemma_output -t /tmp/file_1wt.txt -s /tmp/file_2wot.txt #4 Files to be read
+#rm /tmp/lemma_output /tmp/file_1wt.txt /tmp/file_1wot.txt /tmp/file_2wot.txt

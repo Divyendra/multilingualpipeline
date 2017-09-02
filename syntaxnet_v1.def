@@ -6,10 +6,8 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 
 %runscript
-	#!/bin/bash
-	# cd /opt/models/syntaxnet
-	# echo 'Bob brought the pizza to Alice.' | syntaxnet/demo.sh
-	# cat /opt/models/syntaxnet/syntaxnet/models/other_language_models/trump_german | syntaxnet/models/parsey_universal/parse.sh /opt/models/syntaxnet/syntaxnet/models/other_language_models/German >out_german.txt
+	cd /opt/models/syntaxnet
+	sh /opt/multilingualpipeline/run.sh "$@"
 
 %post
 	/bin/bash
@@ -54,7 +52,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	pip install /tmp/syntaxnet_pkg/syntaxnet-0.2-cp27-cp27mu-linux_x86_64.whl
 	rm -rf /tmp/syntaxnet_pkg
 
-  	cd /opt/models/syntaxnet
+	cd /opt/models/syntaxnet
 	chmod a+x syntaxnet/demo.sh
 
 	cd /opt/models/syntaxnet/syntaxnet/models/
@@ -62,6 +60,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	cd other_language_models
 	wget http://download.tensorflow.org/models/parsey_universal/German.zip http://download.tensorflow.org/models/parsey_universal/Portuguese.zip http://download.tensorflow.org/models/parsey_universal/Russian-SynTagRus.zip http://download.tensorflow.org/models/parsey_universal/Norwegian.zip http://download.tensorflow.org/models/parsey_universal/Danish.zip http://download.tensorflow.org/models/parsey_universal/Swedish.zip http://download.tensorflow.org/models/parsey_universal/Polish.zip
 	unzip '*.zip'
+	chmod -R 755 .
 
 	#Install CSTLemmatizer
 	mkdir /opt/Lemmatizer/ && cd /opt/Lemmatizer/
@@ -88,4 +87,5 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 	#Download Pipeline
 	cd /opt
-	git clone https://github.com/RedHenLab/multilingualpipeline.git 
+	git clone https://github.com/RedHenLab/multilingualpipeline.git
+
