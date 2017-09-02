@@ -59,4 +59,4 @@ else
         lemmatize /tmp/file_1wot.txt > /tmp/lemma_output
 fi
 python $SCRIPTS/parser.py -i $1 -l /tmp/lemma_output -t /tmp/file_1wt.txt -s /tmp/file_2wot.txt #4 Files to be read
-#rm /tmp/lemma_output /tmp/file_1wt.txt /tmp/file_1wot.txt /tmp/file_2wot.txt
+rm /tmp/lemma_output /tmp/file_1wt.txt /tmp/file_1wot.txt /tmp/file_2wot.txt
