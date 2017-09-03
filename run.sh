@@ -32,7 +32,7 @@ elif [ "$2" = "ru" ]; then
         alias parse='$SYNT_SCRIPTS/parse.sh $MODELS/Russian-SynTagRus'
         alias lemmatize='$LEMMATIZER/./cstlemma -L -f $LEMMATIZER/Rules/Russian/flexrules2 -d $LEMMATIZER/Rules/Russian/dict -i'
 elif [ "$2" = "da" ]; then
-        #alias tokenize='$SYNT_SCRIPTS/tokenize.sh $MODELS/Danish'
+        alias tokenize='$SYNT_SCRIPTS/tokenize.sh $MODELS/Norwegian' #using Norwegian tokenizer since Danish one is not available
         alias parse='$SYNT_SCRIPTS/parse.sh $MODELS/Danish'
         alias lemmatize='$LEMMATIZER/./cstlemma -L -f $LEMMATIZER/Rules/Danish/flexrules -d $LEMMATIZER/Rules/Danish/dict -i'
 fi
