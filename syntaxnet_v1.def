@@ -6,86 +6,93 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 
 %runscript
-	cd /opt/models/syntaxnet
-	sh /opt/multilingualpipeline/run.sh "$@"
+    cd /opt/models/syntaxnet
+    sh /opt/multilingualpipeline/run.sh "$@"
 
 %post
-	/bin/bash
-	echo "Hello from inside the container"
-	sed -i 's/$/ universe/' /etc/apt/sources.list
-	apt-get update
-	apt-get upgrade -y
-	apt-get install -y --force-yes git wget nano autoconf automake bzip2 gfortran  libatlas3-base liblapack-dev libopenblas-dev libtool python-dev unzip software-properties-common python-pip subversion curl ruby ruby-dev openjdk-8-jdk
+    /bin/bash
+    echo "Hello from inside the container"
+    sed -i 's/$/ universe/' /etc/apt/sources.list
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y --force-yes git wget nano autoconf automake bzip2 gfortran  libatlas3-base liblapack-dev libopenblas-dev libtool python-dev unzip software-properties-common python-pip subversion curl ruby ruby-dev openjdk-8-jdk
 
-	#Install Bazel
-	echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
-	curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
-	# Use -y
-	apt-get update && apt-get install -y bazel
-	#apt-get upgrade bazel
-	apt-get install -y swig
-	pip install --upgrade pip
-	pip install -U protobuf==3.3.0
-	pip install mock
-	pip install asciitree
-	pip install numpy
-	apt-get install -y graphviz libgraphviz-dev
-	pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
+    #Install Bazel
+    echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+    curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
+    # Use -y
+    apt-get update && apt-get install -y bazel
+    #apt-get upgrade bazel
+    apt-get install -y swig
+    pip install --upgrade pip
+    pip install -U protobuf==3.3.0
+    pip install mock
+    pip install asciitree
+    pip install numpy
+    apt-get install -y graphviz libgraphviz-dev
+    pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
 
-	cd /opt
-	git clone --recursive https://github.com/tensorflow/models.git
-	cd models/syntaxnet/tensorflow
-	printf '/usr/bin/python\n-march=native\nn\nn\nn\nn\n/usr/local/lib/python2.7/dist-packages\nn\nn\nn' | ./configure
-	cd ..
-	bazel test ...
+    cd /opt
+    git clone --recursive https://github.com/tensorflow/models.git
+    cd models
+    git checkout abeb03563717a644d9f03c8eb19ab96d11aa8012
+    cd syntaxnet/tensorflow
+    git checkout a7d6015d
+    printf '/usr/bin/python\n-march=native\nn\nn\nn\nn\n/usr/local/lib/python2.7/dist-packages\nn\nn\nn' | ./configure
+    cd ..
+    bazel test ...
 
-	mv /root/.cache /opt/.cache
-	chmod -R a+rx /opt/.cache
-	cd /opt/.cache/bazel/_bazel_root/
-	find . -lname '/root/.cache*' -printf '%l\0%p\0' | sed -z 's|^/root|/opt|;n' | xargs -r0n2 ln -sfT
-	cd /opt/models/syntaxnet/
-	find . -lname '/root/.cache*' -printf '%l\0%p\0' | sed -z 's|^/root|/opt|;n' | xargs -r0n2 ln -sfT
+    mv /root/.cache /opt/.cache
+    chmod -R a+rx /opt/.cache
+    cd /opt/.cache/bazel/_bazel_root/
+    find . -lname '/root/.cache*' -printf '%l\0%p\0' | sed -z 's|^/root|/opt|;n' | xargs -r0n2 ln -sfT
+    cd /opt/models/syntaxnet/
+    find . -lname '/root/.cache*' -printf '%l\0%p\0' | sed -z 's|^/root|/opt|;n' | xargs -r0n2 ln -sfT
 
-	mkdir /tmp/syntaxnet_pkg
-  	bazel-bin/dragnn/tools/build_pip_package --output-dir=/tmp/syntaxnet_pkg
-	# The following line requires a --cleanenv when I run it with "shell" Not sure yet how that will work during bootstrapping.
-	pip install /tmp/syntaxnet_pkg/syntaxnet-0.2-cp27-cp27mu-linux_x86_64.whl
-	rm -rf /tmp/syntaxnet_pkg
+    mkdir /tmp/syntaxnet_pkg
+    bazel-bin/dragnn/tools/build_pip_package --output-dir=/tmp/syntaxnet_pkg
+    # The following line requires a --cleanenv when I run it with "shell" Not sure yet how that will work during bootstrapping.
+    pip install /tmp/syntaxnet_pkg/syntaxnet-0.2-cp27-cp27mu-linux_x86_64.whl
+    rm -rf /tmp/syntaxnet_pkg
 
-	cd /opt/models/syntaxnet
-	chmod a+x syntaxnet/demo.sh
+    cd /opt/models/syntaxnet
+    chmod a+x syntaxnet/demo.sh
 
-	cd /opt/models/syntaxnet/syntaxnet/models/
-	mkdir other_language_models
-	cd other_language_models
-	wget http://download.tensorflow.org/models/parsey_universal/German.zip http://download.tensorflow.org/models/parsey_universal/Portuguese.zip http://download.tensorflow.org/models/parsey_universal/Russian-SynTagRus.zip http://download.tensorflow.org/models/parsey_universal/Norwegian.zip http://download.tensorflow.org/models/parsey_universal/Danish.zip http://download.tensorflow.org/models/parsey_universal/Swedish.zip http://download.tensorflow.org/models/parsey_universal/Polish.zip
-	unzip '*.zip'
-	chmod -R 755 .
+    cd /opt/models/syntaxnet/syntaxnet/models/
+    mkdir other_language_models
+    cd other_language_models
+    wget http://download.tensorflow.org/models/parsey_universal/German.zip http://download.tensorflow.org/models/parsey_universal/Portuguese.zip http://download.tensorflow.org/models/parsey_universal/Russian-SynTagRus.zip http://download.tensorflow.org/models/parsey_universal/Norwegian.zip http://download.tensorflow.org/models/parsey_universal/Danish.zip http://download.tensorflow.org/models/parsey_universal/Swedish.zip http://download.tensorflow.org/models/parsey_universal/Polish.zip
+    unzip '*.zip'
+    chmod -R 755 .
 
-	#Install CSTLemmatizer
-	mkdir /opt/Lemmatizer/ && cd /opt/Lemmatizer/
-	wget https://raw.githubusercontent.com/kuhumcst/cstlemma/master/doc/makecstlemma.bash
-	sh makecstlemma.bash
-	cd cstlemma/src
-	#Download Rules for lemmatizing
-	mkdir Rules && cd Rules
-	mkdir Danish German Polish Portuguese Russian
-	cd German && wget https://cst.dk/download/cstlemma/german/flexrules
-	cd ../Danish && wget https://cst.dk/download/cstlemma/danish/dict https://cst.dk/download/cstlemma/danish/1/flexrules
-	cd ../Polish && wget https://cst.dk/download/cstlemma/polish/dict https://cst.dk/download/cstlemma/polish/flexrules
-	cd ../Portuguese && wget https://cst.dk/download/cstlemma/portuguese/dict https://cst.dk/download/cstlemma/portuguese/flexrules-supplement-with-dict
-	cd ../Russian && wget https://cst.dk/download/cstlemma/russian/dict https://cst.dk/download/cstlemma/russian/flexrules2
+    #Install CSTLemmatizer
+    mkdir /opt/Lemmatizer/ && cd /opt/Lemmatizer/
+    wget https://raw.githubusercontent.com/kuhumcst/cstlemma/master/doc/makecstlemma.bash
+    sh makecstlemma.bash
+    cd cstlemma/src
+    #Download Rules for lemmatizing
+    mkdir Rules && cd Rules
+    mkdir Danish German Polish Portuguese Russian
+    cd German && wget https://cst.dk/download/cstlemma/german/flexrules
+    cd ../Danish && wget https://cst.dk/download/cstlemma/danish/dict https://cst.dk/download/cstlemma/danish/1/flexrules
+    cd ../Polish && wget https://cst.dk/download/cstlemma/polish/dict https://cst.dk/download/cstlemma/polish/flexrules
+    cd ../Portuguese && wget https://cst.dk/download/cstlemma/portuguese/dict https://cst.dk/download/cstlemma/portuguese/flexrules-supplement-with-dict
+    cd ../Russian && wget https://cst.dk/download/cstlemma/russian/dict https://cst.dk/download/cstlemma/russian/flexrules2
 
-	#Install Sentence Splitter
-	gem install pragmatic_segmenter
-	locale-gen --purge en_US.UTF-8
+    #Install Sentence Splitter
+    gem install pragmatic_segmenter
+    locale-gen --purge en_US.UTF-8
 
-	#Install Treetagger
-	mkdir /opt/Treetagger && cd /opt/Treetagger
-	wget http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger-linux-3.2.1.tar.gz http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tagger-scripts.tar.gz http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/install-tagger.sh http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/russian-par-linux-3.2-utf8.bin.gz
-	sh install-tagger.sh
+    #Install Treetagger
+    mkdir /opt/Treetagger && cd /opt/Treetagger
+    wget http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger-linux-3.2.1.tar.gz http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tagger-scripts.tar.gz http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/install-tagger.sh http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/russian-par-linux-3.2-utf8.bin.gz
+    sh install-tagger.sh
+    cd lib
+    wget http://person2.sol.lu.se/JohanFrid/webapps/treetagger-swe/model_tt_lower_lemmas #Download params for Swedish
 
-	#Download Pipeline
-	cd /opt
-	git clone https://github.com/RedHenLab/multilingualpipeline.git
-
+    #Download Pipeline
+    cd /opt
+    git clone https://github.com/RedHenLab/multilingualpipeline.git
+    cd multilingualpipeline
+    mv make_sents.py /opt/Treetagger/
+    mv tree-tagger-swedish /opt/Treetagger/cmd/

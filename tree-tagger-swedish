@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Set these paths appropriately
+BIN=/opt/Treetagger/bin
+CMD=/opt/Treetagger/cmd
+LIB=/opt/Treetagger/lib
+
+OPTIONS="-no-unknown -token -lemma -sgml"
+
+TOKENIZER=${CMD}/utf8-tokenize.perl
+TAGGER=${BIN}/tree-tagger
+PARFILE=${LIB}/model_tt_lower_lemmas
+
+# do tokenization
+$TAGGER $* $OPTIONS $PARFILE
